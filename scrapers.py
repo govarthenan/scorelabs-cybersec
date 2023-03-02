@@ -1,6 +1,25 @@
 import requests as req
 from bs4 import BeautifulSoup as bs
 
+"""Scrape given link and return in the below dict format, unless otherwise specified."""
+return_format = {
+    "title": "Actual title",
+    "text": [
+        {
+            "type": "para",
+            "contents": [
+                "blah blah blah"
+            ]
+        },
+        {
+            "type": "caption",
+            "contents": [
+                "clah clah clah"
+            ]
+        }
+    ]
+}
+
 # Set appropriate request headers
 headers = {
     "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) \
