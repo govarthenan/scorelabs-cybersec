@@ -73,7 +73,6 @@ def paloaltonetworks(link: str) -> dict:
                     if str(type(x)) == "<class 'bs4.element.Tag'>"
                 ]:
                     data["text"].append(
-                        # child.text.strip().split(".")[1].strip()
                         {
                             "type": "caption",
                             "content": [child.text.strip().split(".")[1].strip()],
@@ -82,9 +81,6 @@ def paloaltonetworks(link: str) -> dict:
                     continue
 
                 # If none of the above condition were met, then the p tag most probably contains text
-                # data["text"]["paragraphs"].append(
-                #     child.text.encode("ascii", "ignore").decode("utf-8").strip()
-                # )
                 data["text"].append(
                     {
                         "type": "paragraph",
