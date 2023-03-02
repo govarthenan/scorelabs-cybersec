@@ -5,19 +5,9 @@ from bs4 import BeautifulSoup as bs
 return_format = {
     "title": "Actual title",
     "text": [
-        {
-            "type": "para",
-            "contents": [
-                "blah blah blah"
-            ]
-        },
-        {
-            "type": "caption",
-            "contents": [
-                "clah clah clah"
-            ]
-        }
-    ]
+        {"type": "para", "contents": ["blah blah blah"]},
+        {"type": "caption", "contents": ["clah clah clah"]},
+    ],
 }
 
 # Set appropriate request headers
@@ -29,10 +19,7 @@ headers = {
 
 def paloaltonetworks(link: str) -> dict:
     # Placeholders
-    data = {
-        "title": None,
-        "text": {"paragraphs": [], "captions": []},
-    }
+    data = {"title": None, "text": []}
 
     # Fetch html and parse it
     raw = req.get(
@@ -41,14 +28,20 @@ def paloaltonetworks(link: str) -> dict:
     )
     soup = bs(raw.content, "lxml")
 
-    # Get title
-    # title_tag = soup.body.find(
-    #     "h1", class_="article__header__title mb-sm-30 mb-40".split()
-    # )
-    # data["title"] = title_tag.text.strip()
-    data["title"] = soup.title.text.strip()
+    # Title
+    # Try to get title from BS4 object
+    title = soup.title.text.strip()
+    if len(title) != 0:
+        data["title"] = title
+    else:
+        # Get title using classic search method
+        title_tag = soup.body.find(
+            "h1", class_="article__header__title mb-sm-30 mb-40".split()
+        )
+        data["title"] = title_tag.text.strip()
 
-    print('Scraping', data["title"])
+    # Aesthetic
+    print(data["title"])
 
     # Select article container tag
     article_container = soup.body.find(
@@ -63,13 +56,13 @@ def paloaltonetworks(link: str) -> dict:
             if child.name == "p":
                 # Check for the translation tag
                 if (
-                        child.attrs.get("class")
-                        == "wpml-ls-statics-post_translations wpml-ls".split()
+                    child.attrs.get("class")
+                    == "wpml-ls-statics-post_translations wpml-ls".split()
                 ):
                     continue
 
                 # Check for empty p tags
-                if len(child.text) == 0:
+                if len(child.text.strip()) == 0:
                     continue
 
                 # Check for image captions
@@ -79,14 +72,26 @@ def paloaltonetworks(link: str) -> dict:
                     for x in child.children
                     if str(type(x)) == "<class 'bs4.element.Tag'>"
                 ]:
-                    data["text"]["captions"].append(
-                        child.text.strip().split(".")[1].strip()
+                    data["text"].append(
+                        # child.text.strip().split(".")[1].strip()
+                        {
+                            "type": "caption",
+                            "content": [child.text.strip().split(".")[1].strip()],
+                        }
                     )
                     continue
 
                 # If none of the above condition were met, then the p tag most probably contains text
-                data["text"]["paragraphs"].append(
-                    child.text.encode("ascii", "ignore").decode("utf-8").strip()
+                # data["text"]["paragraphs"].append(
+                #     child.text.encode("ascii", "ignore").decode("utf-8").strip()
+                # )
+                data["text"].append(
+                    {
+                        "type": "paragraph",
+                        "content": [
+                            child.text.encode("ascii", "ignore").decode("utf-8").strip()
+                        ],
+                    }
                 )
 
     return data
