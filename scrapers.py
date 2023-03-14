@@ -75,7 +75,7 @@ def paloaltonetworks(link: str) -> dict:
                     data["text"].append(
                         {
                             "type": "caption",
-                            "content": [child.text.strip().split(".")[1].strip()],
+                            "content": [child.text.strip()],
                         }
                     )
                     continue
