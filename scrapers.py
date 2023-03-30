@@ -28,6 +28,12 @@ def paloaltonetworks(link: str) -> dict:
     )
     soup = bs(raw.content, "lxml")
 
+    # Detect if the link is a Research Report (PDF),and skip the link
+    # See if there's the Resource Header class, which should indicate if it's a download page
+    if soup.body.find("h1", class_="resource-heading h2".split()) is not None:
+        print(f"Skipping ({soup.title.text.strip()}) as it's a research PDF.")
+        return {}
+
     # Title
     # Try to get title from BS4 object
     title = soup.title.text.strip()
