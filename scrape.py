@@ -4,6 +4,7 @@ import json as js
 from scrapers import paloaltonetworks
 
 if __name__ == "__main__":
+    # Scrape Palo Alto Networks
     # Read links
     with open("./domains/0-paloaltonetworks-86.txt", "r") as file:
         links = file.read().splitlines()
@@ -23,5 +24,5 @@ if __name__ == "__main__":
             master[hsh.sha1(link.encode()).hexdigest()] = data
 
     # Write to disk
-    with open(".\\scraped.json", "w", encoding="utf-8") as f:
+    with open("scraped/scraped.json", "w", encoding="utf-8") as f:
         js.dump(master, f)
